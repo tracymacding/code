@@ -5,7 +5,7 @@
 
 * Required ?
 ** Make sure python installed
-** Make sure module installed
+** Make sure MySQLdb module installed
 
 * Attention
 ** the program download mysql-xx-xx.tar.gz from an url, encoded in code, u can change it
