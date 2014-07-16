@@ -3,15 +3,15 @@
 import os, sys, getopt, urllib, tarfile, MySQLdb, string, time
 from   optparse import OptionParser
 
+# parse parameters, return as option
 def parse_parameter(argv):
 
     parser = OptionParser()
     parser.add_option("-p", "--port", dest="port", default="4337", help="port mysql started")
-    parser.add_option("-d", "--dir", dest="dir", default="./mysql", help="dir mysql installed")
+    parser.add_option("-d", "--dir", dest="dir", default="/tmp", help="dir mysql installed")
     (options, args) = parser.parse_args()
     # change to absolute path
     options.dir = os.path.abspath(options.dir)
-    # print options.port, options.dir
     return options
 
 # download mysql.xx-xx.tar.gz to /tmp/
@@ -25,12 +25,11 @@ def download_mysql(url):
         print "Skipping download, file existed"
         return dest
 
-    # TODO: we should judge whether this file is exist
     print url, "-->", dest
     # TODO: we should judge here
     urllib.urlretrieve(url, dest)
 
-    print "End download mysql tar..."
+    print "End download mysql tar ..."
     return dest
 
 # tar -zxvf mysql.xx.xx.tar.gz to dest dir
@@ -60,7 +59,8 @@ def tar_mysql(file, opt):
 def install_mysql(opt, base_dir):
     print "Installing mysql ..."
 
-    data_dir = opt.dir + "/data"
+    # data_dir = opt.dir + "/data"
+    data_dir = base_dir + "/data"
 
     install_command = base_dir + "/bin/mysql_install_db" + " --basedir=" + base_dir + " --datadir=" + data_dir + " --user=hzdingkai2013"
     os.system(install_command)
@@ -68,21 +68,29 @@ def install_mysql(opt, base_dir):
 
 def generate_config_file(opt, base_dir):
     
-    config_file = opt.dir + "/data/my.conf"
+    print "Generating mysql confile file ..."
+    # config_file = opt.dir + "/data/my.conf"
+    config_file = base_dir + "/data/my.conf"
+    print "Mysql confile file: ", config_file
+
     f = open(config_file, 'w')
 
     headc = "[client]\n"
     port = "port = " + opt.port + "\n"
-    socket = "socket = " + opt.dir + "/data/mysqld.sock\n"
+    # socket = "socket = " + opt.dir + "/data/mysqld.sock\n"
+    socket = "socket = " + base_dir + "/data/mysqld.sock\n"
     heads = "[mysqld_safe]\n"
     user = "user = hzdingkai2013\n"
     ledir = "ledir = " + base_dir + "/bin\n"
     headd = "[mysqld]\n"
     bind_address = "bind-address = 127.0.0.1\n"
-    pid = "pid-file = " + opt.dir + "/data/mysqld.pid\n"
-    data_dir = "datadir = " + opt.dir + "/data\n"
+    # pid = "pid-file = " + opt.dir + "/data/mysqld.pid\n"
+    pid = "pid-file = " + base_dir + "/data/mysqld.pid\n"
+    # data_dir = "datadir = " + opt.dir + "/data\n"
+    data_dir = "datadir = " + base_dir + "/data\n"
     base_dir_s = "basedir = " + base_dir + "\n"
-    log_error = "log-error = " + opt.dir + "/data/mysqld.log\n"
+    # log_error = "log-error = " + opt.dir + "/data/mysqld.log\n"
+    log_error = "log-error = " + base_dir + "/data/mysqld.log\n"
     lc_mess = "lc-messages-dir = " + base_dir + "/share"
 
     # f.write(headc)
@@ -103,6 +111,8 @@ def generate_config_file(opt, base_dir):
     f.write(lc_mess)
 
     f.close()
+
+    print "End generate mysql confile file ..."
 
     return config_file
 
@@ -128,20 +138,28 @@ def create_tables(opt):
         db = MySQLdb.connect(host="127.0.0.1", port=string.atoi(opt.port), db="test")
         cursor = db.cursor()
         # drop table if existed
-        cursor.execute("DROP TABLE IF EXISTS Pool")
+        print "Create table Pool ..."
+        #cursor.execute("DROP TABLE Pool")
         sql = """CREATE TABLE Pool (
              PoolID  bigint not null primary key,
              PoolName  varchar(256) not null)"""
-
         cursor.execute(sql)
 
-        cursor.execute("DROP TABLE IF EXISTS User")
+        print "Create table User ..."
+        #cursor.execute("DROP TABLE User")
         sql = """CREATE TABLE User (
              UserID  bigint not null primary key,
              UserName  varchar(256) not null,
              PoolID  bigint not null)"""
 
         cursor.execute(sql)
+
+        print "Create table Whitelist ..."
+        #cursor.execute("DROP TABLE Whitelist")
+        sql = """CREATE TABLE Whitelist (
+             IP  varchar(32) not null primary key)"""
+        cursor.execute(sql)
+
         db.close()
     except MySQLdb.Error,e:
         print "Mysql Error %d: %s" % (e.args[0], e.args[1])
@@ -165,6 +183,7 @@ def main(argv):
     # start mysqld
     start_mysqld(opt, mysql_dir)
 
+    print "Waitting 10 seconds, mysql to start ..."
     time.sleep(10)
 
     # create table
