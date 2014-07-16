@@ -148,10 +148,11 @@ def create_tables(opt):
         print "Create table User ..."
         #cursor.execute("DROP TABLE User")
         sql = """CREATE TABLE User (
-             UserID  bigint not null primary key,
-             UserName  varchar(256) not null,
-             PoolID  bigint not null)"""
-
+             UID  bigint not null primary key,
+             Name  varchar(256) not null,
+             Passwd    varchar(256) not null,
+             PoolID  bigint not null,
+             AllocPolicy blob not null)"""
         cursor.execute(sql)
 
         print "Create table Whitelist ..."
@@ -160,7 +161,42 @@ def create_tables(opt):
              IP  varchar(32) not null primary key)"""
         cursor.execute(sql)
 
+        print "Create table Zone ..."
+        sql = """CREATE TABLE Zone (
+             ZoneID  bigint not null primary key,
+             PoolID  bigint not null)"""
+        cursor.execute(sql)
+
+        print "Create table PS ..."
+        sql = """CREATE TABLE PS (
+             PSID   bigint not null primary key,
+             IP     varchar(32) not null,
+             Zone   bigint not null,
+             Token  bigint not null,
+             Start  bigint not null,
+             Status tinyint not null,
+             DiskType tinyint not null,
+             Capacity bigint not null,
+             Free     bigint not null,
+             ReadOnly tinyint not null,
+             Fs       varchar(32) not null,
+             Mounted  varchar(256) not null)"""
+        cursor.execute(sql)
+
+        print "Create table Partition ..."
+        sql = """CREATE TABLE Partition (
+             PID         bigint not null primary key,
+             Epoch       bigint not null,
+             Size        bigint not null,
+             Free        bigint not null,
+             Type        tinyint not null,
+             ReadOnly    tinyint not null,
+             AllocPolicy tinyint not null,
+             Replication blob not null)"""
+        cursor.execute(sql)
+
         db.close()
+
     except MySQLdb.Error,e:
         print "Mysql Error %d: %s" % (e.args[0], e.args[1])
 
