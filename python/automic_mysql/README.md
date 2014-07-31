@@ -9,3 +9,16 @@
 
 * Attention
 ** the program download mysql-xx-xx.tar.gz from an url, encoded in code, u can change it
+
+* example
+1. Start mysql under ./tmp () on port 4338
+   python start_mysql.py -d ./tmp -p 4338 
+or
+   python start_mysql.py --dir=./tmp --port=4338
+
+2. Stop mysql we stared above
+   python stop_mysql.py --dir=./tmp/ --port=4338
+or
+   python stop_mysql.py --D   ./tmp/ -p 4338
+     
+   

@@ -173,8 +173,6 @@ def create_tables(opt):
              IP     varchar(32) not null,
              Zone   bigint not null,
              Token  bigint not null,
-             Start  bigint not null,
-             Status tinyint not null,
              DiskType tinyint not null,
              Capacity bigint not null,
              Free     bigint not null,
