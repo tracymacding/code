@@ -6,7 +6,7 @@ from   optparse import OptionParser
 def parse_parameter(argv):
 
     parser = OptionParser()
-    parser.add_option("-p", "--port", dest="port", default="4337", help="port mysql started")
+    parser.add_option("-p", "--port", dest="port", default="4338", help="port mysql started")
     parser.add_option("-D", "--dir", dest="dir", default="/tmp", help="dir mysql installed")
     parser.add_option("-d", "--delete", dest="delete", default="false", help="delete everything after clear")
     (options, args) = parser.parse_args()

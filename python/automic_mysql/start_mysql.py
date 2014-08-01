@@ -1,4 +1,4 @@
-#start_mysql.py
+# start_mysql.py
 
 import os, sys, getopt, urllib, tarfile, MySQLdb, string, time
 from   optparse import OptionParser
@@ -7,7 +7,7 @@ from   optparse import OptionParser
 def parse_parameter(argv):
 
     parser = OptionParser()
-    parser.add_option("-p", "--port", dest="port", default="4337", help="port mysql started")
+    parser.add_option("-p", "--port", dest="port", default="4338", help="port mysql started")
     parser.add_option("-d", "--dir", dest="dir", default="/tmp", help="dir mysql installed")
     (options, args) = parser.parse_args()
     # change to absolute path
@@ -59,7 +59,6 @@ def tar_mysql(file, opt):
 def install_mysql(opt, base_dir):
     print "Installing mysql ..."
 
-    # data_dir = opt.dir + "/data"
     data_dir = base_dir + "/data"
 
     install_command = base_dir + "/bin/mysql_install_db" + " --basedir=" + base_dir + " --datadir=" + data_dir + " --user=hzdingkai2013"
@@ -69,7 +68,6 @@ def install_mysql(opt, base_dir):
 def generate_config_file(opt, base_dir):
     
     print "Generating mysql confile file ..."
-    # config_file = opt.dir + "/data/my.conf"
     config_file = base_dir + "/data/my.conf"
     print "Mysql confile file: ", config_file
 
@@ -77,25 +75,18 @@ def generate_config_file(opt, base_dir):
 
     headc = "[client]\n"
     port = "port = " + opt.port + "\n"
-    # socket = "socket = " + opt.dir + "/data/mysqld.sock\n"
     socket = "socket = " + base_dir + "/data/mysqld.sock\n"
     heads = "[mysqld_safe]\n"
     user = "user = hzdingkai2013\n"
     ledir = "ledir = " + base_dir + "/bin\n"
     headd = "[mysqld]\n"
     bind_address = "bind-address = 127.0.0.1\n"
-    # pid = "pid-file = " + opt.dir + "/data/mysqld.pid\n"
     pid = "pid-file = " + base_dir + "/data/mysqld.pid\n"
-    # data_dir = "datadir = " + opt.dir + "/data\n"
     data_dir = "datadir = " + base_dir + "/data\n"
     base_dir_s = "basedir = " + base_dir + "\n"
-    # log_error = "log-error = " + opt.dir + "/data/mysqld.log\n"
     log_error = "log-error = " + base_dir + "/data/mysqld.log\n"
     lc_mess = "lc-messages-dir = " + base_dir + "/share"
 
-    # f.write(headc)
-    # f.write(port)
-    # f.write(socket)
     f.write(heads)
     f.write(user)
     f.write(ledir)
@@ -113,7 +104,6 @@ def generate_config_file(opt, base_dir):
     f.close()
 
     print "End generate mysql confile file ..."
-
     return config_file
 
 # start mysqld
